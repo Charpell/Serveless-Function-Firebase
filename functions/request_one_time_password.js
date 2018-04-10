@@ -9,7 +9,7 @@ module.exports = function(req, res) {
 
   const phone = String(req.body.phone).replace(/[^\d]/g, '');
 
-  admin.auth().getUser(phone)
+  return admin.auth().getUser(phone)
     .then(userRecord => {
       const code = Math.floor((Math.random() * 8999 + 1000));
 
@@ -17,6 +17,16 @@ module.exports = function(req, res) {
         body: 'Your code is ' + code,
         to: phone,
         from: '+13522681352'
+      }, (err) => {
+        if (err) {
+          return res.status(422).send({ err })
+        }
+
+        return admin.database().ref('users/' + phone)
+          .update({ code, codeValid: true }, () => {
+            res.send({ success: true })
+          });
+
       })
     })
     .catch((error) => {
