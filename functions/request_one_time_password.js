@@ -9,7 +9,7 @@ module.exports = function(req, res) {
 
   const phone = String(req.body.phone).replace(/[^\d]/g, '');
 
-  return admin.auth().getUser(phone)
+  admin.auth().getUser(phone)
     .then(userRecord => {
       const code = Math.floor((Math.random() * 8999 + 1000));
 
@@ -22,7 +22,7 @@ module.exports = function(req, res) {
           return res.status(422).send({ err })
         }
 
-        return admin.database().ref('users/' + phone)
+        admin.database().ref('users/' + phone)
           .update({ code, codeValid: true }, () => {
             res.send({ success: true })
           });
